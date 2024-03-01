@@ -9,3 +9,4 @@ mod agent;
 mod message;
 mod llm;
 mod tool;
+mod swarm;

@@ -1,8 +1,28 @@
 use crate::prelude::*;
 
-pub trait LLM {
-    fn call(&self, message: impl Into<String>) -> Result<String>;
+trait LLMClone {
+    fn clone_box(&self) -> Box<dyn LLM>;
 }
+
+impl<T> LLMClone for T
+where
+    T: 'static + LLM + Clone,
+{
+    fn clone_box(&self) -> Box<dyn LLM> {
+        Box::new(self.clone())
+    }
+}
+
+pub trait LLM: LLMClone {
+    fn call(&self, message: String) -> Result<String>;
+}
+
+impl Clone for Box<dyn LLM> {
+    fn clone(&self) -> Box<dyn LLM> {
+        self.clone_box()
+    }
+}
+
 
 #[derive(Debug, Clone)]
 pub struct Ollama {
@@ -35,7 +55,7 @@ impl Ollama {
 }
 
 impl LLM for Ollama {
-    fn call(&self, message: impl Into<String>) -> Result<String> {
+    fn call(&self, message: String) -> Result<String> {
         // let message = message.into();
         // let url = format!("{}/{}{}", self.base_url, self.model_name, self.end_point);
         // let client = reqwest::blocking::Client::new();
@@ -106,7 +126,7 @@ impl OpenAI {
 }
 
 impl LLM for OpenAI {
-    fn call(&self, message: impl Into<String>) -> Result<String> {
+    fn call(&self, message: String) -> Result<String> {
         // let message = message.into();
         // let url = format!("{}/{}{}", self.base_url, self.model_name, self.end_point);
         // let client = reqwest::blocking::Client::new();
@@ -145,6 +165,12 @@ impl OpenAIBuilder {
             )
         )
     }
+}
+
+
+pub enum LLMWrapper {
+    Ollama(Ollama),
+    OpenAI(OpenAI),
 }
 
 #[cfg(test)]

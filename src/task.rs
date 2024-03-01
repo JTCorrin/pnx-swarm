@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Task {
     requirement: String,
     description: String,
@@ -53,7 +53,7 @@ impl Default for Task {
 }
 
 impl Task {
-    fn new(requirement: impl Into<String>, description: impl Into<String>) -> Task {
+    pub fn new(requirement: impl Into<String>, description: impl Into<String>) -> Task {
         Task {
             requirement: requirement.into(),
             description: description.into(),
