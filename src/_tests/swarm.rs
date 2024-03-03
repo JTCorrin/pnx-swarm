@@ -5,7 +5,7 @@ mod tests {
     use crate::task::{TaskBuilder, Task};
     use crate::agent::{AgentBuilder, Agent};
     use crate::tool::{ToolBuilder, Tool};
-use std::default::Default;
+
 
     #[test]
     fn test_swarm() {
@@ -72,7 +72,8 @@ use std::default::Default;
             .tools(vec![tool])
             .build();
 
-        
+        assert_eq!(swarm.agents.len(), 2, "Swarm should have 2 agents");
+
     }
 
     #[test]
