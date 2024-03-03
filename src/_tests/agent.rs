@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::{agent::{Agent, AgentBuilder}, llm::{Ollama, OpenAI, OpenAIBuilder}};
+    use crate::{agent::{Agent, AgentBuilder}, llm::{ollama::Ollama, open_ai::{OpenAI, OpenAIBuilder}}};
 
     #[test]
     fn test_agent_builder() {

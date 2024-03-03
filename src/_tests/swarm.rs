@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::llm::{Ollama, OpenAI, OpenAIBuilder};
+    use crate::llm::{ollama::{Ollama, OllamaBuilder}, open_ai::OpenAIBuilder};
     use crate::swarm::{SwarmBuilder, Swarm, Process};
     use crate::task::{TaskBuilder, Task};
     use crate::agent::{AgentBuilder, Agent};

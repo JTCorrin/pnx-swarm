@@ -1,4 +1,6 @@
-use crate::{llm::{Ollama, LLM}, prelude::*};
+use crate::prelude::*;
+use super::llm::{LLM, ollama::Ollama};
+
 
 #[derive(Clone)]
 pub struct Agent {
