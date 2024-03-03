@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 thiserror = "1"
 tokio = { version = "1", features = ["full"] }
+reqwest = "0.11"
 # JSON Libs
 serde = "1"
 serde_json = "1"

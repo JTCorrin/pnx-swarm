@@ -1,8 +1,23 @@
-use std::os::windows::process;
+use std::vec;
 
-use crate::{agent::Agent, llm::LLM, prelude::*, task::Task, tool::Tool};
+use crate::{agent::Agent, llm::{open_ai::OpenAIBuilder, LLM}, prelude::*, task::Task, tool::Tool};
 
-#[derive(Debug, Clone)]
+// States
+#[derive(Default, Clone)]
+pub struct NoTasks;
+
+#[derive(Default, Clone)]
+pub struct Tasks(Vec<Task>);
+
+#[derive(Default, Clone)]
+pub struct NoAgents;
+
+#[derive(Default, Clone)]
+pub struct Agents(Vec<Agent>);
+
+
+
+#[derive(Debug, Clone, PartialEq)]
 enum Process {
     Sequential,
     Parallel
@@ -13,7 +28,8 @@ struct Swarm {
     agents: Vec<Agent>,
     verbose: bool,
     process: Process,
-    tools: Option<Vec<Tool>> // Not necessarily required
+    tools: Option<Vec<Tool>>, // Not necessarily required
+    complete: bool
 }
 
 impl Swarm {
@@ -24,33 +40,56 @@ impl Swarm {
 
 
 #[derive(Default)]
-pub struct SwarmBuilder {
-    tasks: Option<Vec<Task>>,
-    agents: Option<Vec<Agent>>,
+pub struct SwarmBuilder<T, A> {
+    tasks: T,
+    agents: A,
     verbose: Option<bool>,
     process: Option<Process>,
     tools: Option<Vec<Tool>>
 }
 
-impl SwarmBuilder {
+impl SwarmBuilder<NoTasks, NoAgents> {
     fn new() -> Self {
-        Self { 
-            tasks: None,
-            agents: None,
-            verbose: Some(true),
-            process: Some(Process::Sequential),
-            tools: None
+        SwarmBuilder::default()
+    }
+}
+
+impl SwarmBuilder<Tasks, Agents> {
+    fn build(&self) -> Result<Swarm> {
+        let process = self.process.clone().unwrap_or(Process::Sequential);
+
+        Ok(
+            Swarm {
+                tasks: self.tasks.0.clone(),
+                agents: self.agents.0.clone(),
+                verbose: self.verbose.unwrap_or_default(),
+                process: process.clone(),
+                tools: self.tools.clone(),
+                complete: false
+            }
+        )
+    }
+}
+
+impl <T: Clone, A: Clone>SwarmBuilder<T, A> {
+    fn tasks(&mut self, tasks: Vec<Task>) -> SwarmBuilder<Tasks, A> {
+        SwarmBuilder {
+            tasks: Tasks(tasks),
+            agents: self.agents.clone(),
+            verbose: self.verbose.clone(),
+            process: self.process.clone(),
+            tools: self.tools.clone()
         }
     }
 
-    fn tasks(&mut self, tasks: Vec<Task>) -> &mut Self {
-        self.tasks.insert(tasks);
-        self
-    }
-
-    fn agents(&mut self, agents: Vec<Agent>) -> &mut Self {
-        self.agents.insert(agents);
-        self
+    fn agents(&mut self, agents: Vec<Agent>) -> SwarmBuilder<T, Agents> {
+        SwarmBuilder {
+            tasks: self.tasks.clone(),
+            agents: Agents(agents),
+            verbose: self.verbose.clone(),
+            process: self.process.clone(),
+            tools: self.tools.clone()
+        }
     }
 
     fn verbose(&mut self, verbose: bool) -> &mut Self {
@@ -66,20 +105,6 @@ impl SwarmBuilder {
     fn tools(&mut self, tools: Vec<Tool>) -> &mut Self {
         self.tools.insert(tools);
         self
-    }
-
-    fn build(&self) -> Swarm {
-        let tasks = self.tasks.as_ref().ok_or(Error::Generic("Tasks are required".to_string())).unwrap().clone();
-        let agents = self.agents.as_ref().ok_or(Error::Generic("Agents are required".to_string())).unwrap().clone();
-        let process = self.process.as_ref().ok_or(Error::Generic("Process is required".to_string())).unwrap().clone();
-
-        Swarm {
-            tasks: tasks.clone(),
-            agents: agents.clone(),
-            verbose: self.verbose.unwrap_or_default(),
-            process: process.clone(),
-            tools: self.tools.clone()
-        }
     }
 }
 

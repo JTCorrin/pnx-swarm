@@ -1,5 +1,6 @@
 pub mod ollama;
 pub mod open_ai;
+pub mod transport;
 
 use crate::prelude::*;
 
