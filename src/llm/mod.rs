@@ -2,7 +2,9 @@ pub mod ollama;
 pub mod open_ai;
 pub mod transport;
 
-use crate::prelude::*;
+use std::future::Future;
+
+use crate::{message::Message, prelude::*};
 
 pub trait LLMClone {
     fn clone_box(&self) -> Box<dyn LLM>;
@@ -17,8 +19,9 @@ where
     }
 }
 
+
 pub trait LLM: LLMClone {
-    fn call(&self, message: String) -> Result<String>;
+    fn call(&self, messages: Vec<Message>) -> Result<String>;
 }
 
 impl Clone for Box<dyn LLM> {

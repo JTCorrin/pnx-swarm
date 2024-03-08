@@ -1,5 +1,5 @@
-use crate::prelude::*;
-use super::{LLM, ModelName, NoModelName};
+use crate::{message::Message, prelude::*};
+use super::{transport::Transport, ModelName, NoModelName, LLM};
 
 #[derive(Debug, Clone)]
 pub struct Ollama {
@@ -7,6 +7,7 @@ pub struct Ollama {
     pub model_name: String,
     api_key: String,
     end_point: String,
+    transport: Transport
 }
 
 impl Default for Ollama {
@@ -16,6 +17,7 @@ impl Default for Ollama {
             model_name: "llama2".to_string(),
             end_point: "/api/chat".to_string(),
             api_key: "Not required".to_string(),
+            transport: Transport::new()
         }
     }
 }
@@ -31,8 +33,9 @@ impl Ollama {
     }
 }
 
+
 impl LLM for Ollama {
-    fn call(&self, message: String) -> Result<String> {
+    fn call(&self, messages: Vec<Message>) -> Result<String> {
         todo!("Implement Ollama call method")
     }
 }

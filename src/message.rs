@@ -1,6 +1,7 @@
+use serde_derive::Serialize;
 use crate::prelude::*;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Clone)]
 pub struct Message {
     role: String,
     content: String,

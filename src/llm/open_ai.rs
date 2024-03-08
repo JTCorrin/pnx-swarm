@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{message::Message, prelude::*};
 use super::{LLM, ModelName, NoModelName, APIKey, NoAPIKey};
 
 #[derive(Debug, Clone)]
@@ -21,7 +21,7 @@ impl OpenAI {
 }
 
 impl LLM for OpenAI {
-    fn call(&self, message: String) -> Result<String> {
+    fn call(&self, messages: Vec<Message>) -> Result<String> {
         todo!("Implement OpenAI call method")
     }
 }
