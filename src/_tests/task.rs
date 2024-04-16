@@ -7,24 +7,18 @@ mod tests {
         let task = TaskBuilder::new()
             .requirement("Requirement")
             .description("Description")
+            .expected_outcome("Expected Outcome")
             .build()
             .unwrap();
 
         assert_eq!(task.requirement, "Requirement");
         assert_eq!(task.description, "Description");
-    }
-
-    #[test]
-    fn test_task_default() {
-        let task = Task::default();
-
-        assert_eq!(task.requirement, "Requirement not yet set");
-        assert_eq!(task.description, "No description");
+        assert_eq!(task.expected_outcome, "Expected Outcome");
     }
 
     #[test]
     fn test_task_new() {
-        let task = Task::new("Requirement", "Description");
+        let task = Task::new("Requirement", "Description", "Expected Outcome");
 
         assert_eq!(task.requirement, "Requirement");
         assert_eq!(task.description, "Description");

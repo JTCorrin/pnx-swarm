@@ -1,10 +1,10 @@
-use serde_derive::Serialize;
+use serde_derive::{Serialize, Deserialize};
 use crate::prelude::*;
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Message {
-    role: String,
-    content: String,
+    pub role: String,
+    pub content: String,
 }
 
 #[derive(Default)]

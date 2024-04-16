@@ -61,7 +61,7 @@ impl TaskBuilder<Requirement, Description, ExpectedOutcome> {
 
 impl<R, D, E> TaskBuilder<R, D, E> {
 
-    pub fn requirement(&mut self, requirement: impl Into<String>) -> TaskBuilder<Requirement, D, E> {
+    pub fn requirement(mut self, requirement: impl Into<String>) -> TaskBuilder<Requirement, D, E> {
         TaskBuilder {
             requirement: Requirement(requirement.into()),
             description: self.description,
@@ -69,7 +69,7 @@ impl<R, D, E> TaskBuilder<R, D, E> {
         }
     }
 
-    pub fn description(&mut self, description: impl Into<String>) -> TaskBuilder<R, Description, E> {
+    pub fn description(mut self, description: impl Into<String>) -> TaskBuilder<R, Description, E> {
         TaskBuilder {
             requirement: self.requirement,
             description: Description(description.into()),
@@ -77,7 +77,7 @@ impl<R, D, E> TaskBuilder<R, D, E> {
         }
     }
     
-    pub fn expected_outcome(&mut self, expected_outcome: impl Into<String>) -> TaskBuilder<R, D, ExpectedOutcome> {
+    pub fn expected_outcome(mut self, expected_outcome: impl Into<String>) -> TaskBuilder<R, D, ExpectedOutcome> {
         TaskBuilder {
             requirement: self.requirement,
             description: self.description,

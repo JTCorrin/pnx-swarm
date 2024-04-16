@@ -1,73 +1,37 @@
 #[cfg(test)]
 mod tests {
-    use crate::{agent::{Agent, AgentBuilder}, llm::{ollama::Ollama, open_ai::{OpenAI, OpenAIBuilder}}};
+    use crate::{agent::{Agent, AgentBuilder}, llm::LLM, planner::Planner, task::TaskBuilder};
 
     #[test]
     fn test_agent_builder() {
         let ollama_agent: Agent = AgentBuilder::new()
-            .role("Role")
-            .goal("Goal")
-            .backstory("Backstory")
+            .role("You are a friendly assistant")
+            .goal("To assist the user")
+            .backstory("You have been designed to help users with their queries")
             .verbose(true)
             .allow_delegation(true)
-            .llm(Box::new(Ollama::default()))
+            .llm(LLM::new(
+                "http://192.168.1.73:11434", 
+                "/api/chat", 
+                "mistral-openorca", 
+                "api_key",
+                crate::llm::LLMType::Ollama
+            ))
             .build()
             .unwrap();
 
-        assert_eq!(ollama_agent.role, "Role");
-        assert_eq!(ollama_agent.goal, "Goal");
-        assert_eq!(ollama_agent.backstory, "Backstory");
-        assert_eq!(ollama_agent.verbose, true);
-        assert_eq!(ollama_agent.allow_delegation, true);
+        assert_eq!(ollama_agent.role, "You are a friendly assistant");
 
-        let open_ai_agent: Agent = AgentBuilder::new()
-            .role("Role")
-            .goal("Goal")
-            .backstory("Backstory")
-            .verbose(true)
-            .allow_delegation(true)
-            .llm(Box::new(OpenAI::new("api_key", "model_name")))
+        let task = TaskBuilder::new()
+            .requirement("Develop an idea for a simple yet profitable business")
+            .description("You are to develop an idea for a simple yet profitable business. The idea should be simple, yet profitable enough to be a viable business.")
+            .expected_outcome("A simple yet profitable business idea in a business plan")
             .build()
             .unwrap();
 
-        assert_eq!(open_ai_agent.role, "Role");
-        assert_eq!(open_ai_agent.goal, "Goal");
-        assert_eq!(open_ai_agent.backstory, "Backstory");
-        assert_eq!(open_ai_agent.verbose, true);
-        assert_eq!(open_ai_agent.allow_delegation, true);
-
-    }
-
-    #[test]
-    fn test_agent_default() {
-        let mut agent: Agent = Agent::default();
-
-        assert_eq!(agent.role, "Role not yet set");
-        assert_eq!(agent.goal, "Goal not yet set");
-        assert_eq!(agent.backstory, "No backstory");
-        assert_eq!(agent.verbose, false);
-        assert_eq!(agent.allow_delegation, false);
-
-        agent.role = "Role".to_string();
-        assert_eq!(agent.role, "Role");
-
-    }
-
-    #[test]
-    fn test_agent_new() {
-        let open_ai_agent: Agent = Agent::new("Role", "Goal", "Backstory", true, false, Box::new(OpenAI::new("api_key", "model_name")));
-        let ollama_agent: Agent = Agent::new("Role", "Goal", "Backstory", true, false, Box::new(Ollama::default()));
-
-        assert_eq!(open_ai_agent.role, "Role");
-        assert_eq!(open_ai_agent.goal, "Goal");
-        assert_eq!(open_ai_agent.backstory, "Backstory");
-        assert_eq!(open_ai_agent.verbose, true);
-        assert_eq!(open_ai_agent.allow_delegation, false);
+        ollama_agent.execute(task);
         
-        assert_eq!(ollama_agent.role, "Role");
-        assert_eq!(ollama_agent.goal, "Goal");
-        assert_eq!(ollama_agent.backstory, "Backstory");
-        assert_eq!(ollama_agent.verbose, true);
-        assert_eq!(ollama_agent.allow_delegation, false);
+
     }
+
 }

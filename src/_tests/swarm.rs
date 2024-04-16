@@ -10,7 +10,7 @@ mod tests {
     #[test]
     fn test_swarm() {
         
-        let task = Task::new("Requirement", "Description");
+        let task = Task::new("Requirement", "Description", "Expected Outcome");
         
         let agent: Agent = AgentBuilder::new()
             .role("Role")
@@ -39,8 +39,16 @@ mod tests {
 
 
     fn test_swarm_builder_missing_process() {
-        let task = Task::new("Requirement", "Description");
-        let agent = Agent::new("role", "goal", "backstory", true, true, Box::new(Ollama::default()));
+        let task = Task::new("Requirement", "Description", "Expected Outcome");
+        let agent = AgentBuilder::new()
+            .role("Role")
+            .goal("Goal")
+            .backstory("Backstory")
+            .verbose(true)
+            .allow_delegation(true)
+            .llm(Box::new(Ollama::default()))
+            .build()
+            .unwrap();
         let tool = Tool::new("Tool", "Description", false, false, false, serde_json::Value::Null, |value| Ok(value));
         let swarm = SwarmBuilder::new()
             .tasks(vec![task])
